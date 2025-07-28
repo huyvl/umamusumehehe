@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horse Racing Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            background: linear-gradient(90deg, #8BC34A, #4CAF50);
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-label {
+            background: #e0e0e0;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .form-select {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            min-width: 120px;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .stats-header {
+            background: #8BC34A;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .stats-value {
+            text-align: center;
+            padding: 8px;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+        }
+
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .skill-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .skill-speed { background: #4CAF50; }
+        .skill-stamina { background: #2196F3; }
+        .skill-power { background: #4CAF50; }
+        .skill-guts { background: #FF9800; }
+
+        .recovery-blue { background: #2196F3; }
+        .recovery-orange { background: #FF9800; }
+
+        .debuff-orange { background: #FF9800; }
+        .debuff-red { background: #F44336; }
+
+        .skill-name {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .skill-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: auto;
+        }
+
+        .control-btn {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .control-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .skill-value {
+            font-size: 12px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .info-btn {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #666;
+            color: white;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .options-section {
+            padding: 15px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #4CAF50;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+
+        .calculate-btn {
+            background: #ccc;
+            color: #666;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .calculate-btn:hover {
+            background: #bbb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Search Conditions -->
+        <div class="section-header">Search Conditions</div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <div class="form-label">Track</div>
+                <select class="form-select">
+                    <option>Tokyo</option>
+                    <option>Kyoto</option>
+                    <option>Hanshin</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-label">Course</div>
+                <select class="form-select">
+                    <option>Turf 2400m</option>
+                    <option>Dirt 1600m</option>
+                    <option>Turf 1800m</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-label">Track Type</div>
+                <select class="form-select">
+                    <option>Good</option>
+                    <option>Soft</option>
+                    <option>Heavy</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="section-header">Status</div>
+        
+        <table class="stats-table">
+            <tr>
+                <th class="stats-header">Speed</th>
+                <th class="stats-header">Stamina</th>
+                <th class="stats-header">Power</th>
+                <th class="stats-header">Guts</th>
+                <th class="stats-header">Wisdom</th>
+            </tr>
+            <tr>
+                <td class="stats-value">1600</td>
+                <td class="stats-value">1200</td>
+                <td class="stats-value">1200</td>
+                <td class="stats-value">1200</td>
+                <td class="stats-value">1200</td>
+            </tr>
+        </table>
+
+        <div class="form-row">
+            <div class="form-group">
+                <div class="form-label">Track Aptitude</div>
+                <select class="form-select">
+                    <option>A</option>
+                    <option>B</option>
+                    <option>C</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-label">Distance Aptitude</div>
+                <select class="form-select">
+                    <option>S</option>
+                    <option>A</option>
+                    <option>B</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-label">Leg Quality</div>
+                <select class="form-select">
+                    <option>A</option>
+                    <option>B</option>
+                    <option>C</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <div class="form-label">Strategy</div>
+                <select class="form-select">
+                    <option>Front Runner</option>
+                    <option>Stalker</option>
+                    <option>Mid Pack</option>
+                    <option>Closer</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <div class="form-label">调子</div>
+                <select class="form-select">
+                    <option>Perfect</option>
+                    <option>Good</option>
+                    <option>Average</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Green Skills -->
+        <div class="section-header">Green Skills</div>
+        
+        <div class="skill-grid">
+            <div class="skill-item">
+                <div class="skill-icon skill-speed">SPD</div>
+                <div class="skill-name">60</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon skill-stamina">STA</div>
+                <div class="skill-name">40</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon skill-stamina">STA</div>
+                <div class="skill-name">60</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon skill-guts">GUT</div>
+                <div class="skill-name">40</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recovery Skills -->
+        <div class="section-header">Recovery Skills</div>
+        
+        <div class="skill-grid">
+            <div class="skill-item">
+                <div class="skill-icon recovery-blue">9.5%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon recovery-blue">7.5%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon recovery-blue">5.5%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon recovery-orange">3.5%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon recovery-blue">1.5%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon recovery-orange">0.5%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon recovery-orange">0.35%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debuff Skills -->
+        <div class="section-header">Debuff Skills</div>
+        
+        <div class="skill-grid">
+            <div class="skill-item">
+                <div class="skill-icon debuff-orange">-4.0%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon debuff-red">-3.0%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon debuff-orange">-2.0%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon debuff-red">-1.0%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon debuff-red">-0.5%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+            
+            <div class="skill-item">
+                <div class="skill-icon debuff-red">-0.25%</div>
+                <div class="info-btn">!</div>
+                <div class="skill-controls">
+                    <div class="control-btn" onclick="decreaseValue(this)">−</div>
+                    <div class="skill-value">0</div>
+                    <div class="control-btn" onclick="increaseValue(this)">+</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Options -->
+        <div class="section-header">Options</div>
+        
+        <div class="options-section">
+            <div class="option-item">
+                <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                <span>Chase Racing</span>
+            </div>
+            
+            <div class="option-item">
+                <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                <span>Position Change</span>
+            </div>
+            
+            <div class="option-item">
+                <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                <span>Hang Back</span>
+            </div>
+        </div>
+
+        <button class="calculate-btn">Calculate</button>
+    </div>
+
+    <script>
+        function increaseValue(button) {
+            const valueElement = button.previousElementSibling;
+            let value = parseInt(valueElement.textContent);
+            valueElement.textContent = value + 1;
+        }
+
+        function decreaseValue(button) {
+            const valueElement = button.nextElementSibling;
+            let value = parseInt(valueElement.textContent);
+            if (value > 0) {
+                valueElement.textContent = value - 1;
+            }
+        }
+
+        function toggleSwitch(toggle) {
+            toggle.classList.toggle('active');
+        }
+
+        // Make calculate button interactive
+        document.querySelector('.calculate-btn').addEventListener('click', function() {
+            this.style.background = '#4CAF50';
+            this.style.color = 'white';
+            this.textContent = 'Calculating...';
+            
+            setTimeout(() => {
+                this.style.background = '#ccc';
+                this.style.color = '#666';
+                this.textContent = 'Calculate';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
